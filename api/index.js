@@ -7,7 +7,7 @@ import userRoutes from "./routes/user.route.js";
 import authRoutes from "./routes/auth.route.js";
 import postRoutes from "./routes/post.route.js";
 import commentRoutes from "./routes/comment.route.js";
-import uploadRoutes from "./routes/upload.route.js"; 
+import uploadRoutes from "./routes/upload.route.js";
 import cron from "node-cron";
 import { autoApproveExpiredRequests } from "./controller/post.controller.js";
 
@@ -29,7 +29,9 @@ app.use(cookieParser());
 
 // Database connection logic wrapped globally
 mongoose
-  .connect(process.env.MONGODB_URI )
+  .connect(
+    `mongodb+srv://softxic_blog:softxicBlog123$$@softxic1.xnstlfr.mongodb.net/blogs`,
+  )
   .then(() => console.log(`mongoDb is connected successfully`.white))
   .catch((err) => console.log(err));
 
