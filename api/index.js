@@ -11,27 +11,41 @@ import uploadRoutes from "./routes/upload.route.js";
 import cron from "node-cron";
 import { autoApproveExpiredRequests } from "./controller/post.controller.js";
 
-// // Fallback DNS resolver configuration
-// try {
-//   const dns = await import("node:dns/promises");
-//   if (dns.setServers && process.env.NODE_ENV !== "production") {
-//     dns.setServers(["1.1.1.1", "8.8.8.8"]);
-//   }
-// } catch (e) {
-//   console.log("DNS optimization skipped");
-// }
-
 dotenv.config();
 const app = express();
+
+// CORS Middleware - Important for separate frontend
+app.use((req, res, next) => {
+  const allowedOrigins = [
+    process.env.FRONTEND_URL,
+    "http://localhost:5173",
+  ].filter(Boolean);
+
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+  }
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization, Cookie",
+  );
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
 
 app.use(express.json());
 app.use(cookieParser());
 
-// Database connection logic wrapped globally
+// Database connection
 mongoose
   .connect(process.env.MONGO_URL)
-  .then(() => console.log(`mongoDb is connected successfully`.white))
-  .catch((err) => console.log(err));
+  .then(() => console.log(`✅ MongoDB connected`.white))
+  .catch((err) => console.log("❌ MongoDB error:", err));
 
 // API Routes
 app.use("/api/v1/user", userRoutes);
@@ -40,7 +54,31 @@ app.use("/api/v1/post", postRoutes);
 app.use("/api/v1/comment", commentRoutes);
 app.use("/api/v1/upload", uploadRoutes);
 
-// Global Error Handler Middleware
+// Health check endpoint
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    message: "API is running 🚀",
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// Root endpoint
+app.get("/", (req, res) => {
+  res.status(200).json({
+    message: "MERN Blog API",
+    version: "1.0.0",
+    endpoints: {
+      auth: "/api/v1/auth",
+      users: "/api/v1/user",
+      posts: "/api/v1/post",
+      comments: "/api/v1/comment",
+      upload: "/api/v1/upload",
+    },
+  });
+});
+
+// Global Error Handler
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   const message = err.message || "Internal server error";
@@ -51,23 +89,23 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.get("/", (req, res) => {
-  res.send("Health is ok🖤");
-});
-
-// Cron Jobs (Note: Node-cron only stays active while a serverless function is awake)
-cron.schedule("0 * * * *", async () => {
-  console.log("🔄 Running auto-approval cron job...");
-  await autoApproveExpiredRequests();
-  console.log("✅ Auto-approval cron job completed");
-});
-
-// CRITICAL FIX: Only listen locally. Vercel handles routing dynamically in production.
+// Cron Jobs (Note: Vercel Serverless doesn't keep cron alive)
+// For production, use Vercel Cron Jobs feature
 if (process.env.NODE_ENV !== "production") {
-  app.listen(3000, () => {
-    console.log("Server running on port 3000".bgBlue);
+  cron.schedule("0 * * * *", async () => {
+    console.log("🔄 Running auto-approval cron job...");
+    await autoApproveExpiredRequests();
+    console.log("✅ Auto-approval cron job completed");
   });
 }
 
-// CRITICAL FIX: Export for Vercel Serverless engine
+// Vercel Serverless export
 export default app;
+
+// Local development server
+if (process.env.NODE_ENV !== "production") {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`.bgBlue);
+  });
+}
