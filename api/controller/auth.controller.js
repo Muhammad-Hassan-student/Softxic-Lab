@@ -19,7 +19,7 @@ export const signUpController = async (req, res, next) => {
 
   const hashPassword = bcryptjs.hashSync(password, 10);
 
-  // 🔥 Role validation: Sirf "author" ya "user" allow karo (admin manually assign hoga)
+  //  Role validation: Sirf "author" ya "user" allow karo (admin manually assign hoga)
   let userRole = "user";
   if (role && (role === "author" || role === "user")) {
     userRole = role;
@@ -29,7 +29,7 @@ export const signUpController = async (req, res, next) => {
     username,
     email,
     password: hashPassword,
-    role: userRole, // 🔥 Role save karo
+    role: userRole, //  Role save karo
     isAdmin: userRole === "admin" ? true : false, // 🔥 isAdmin sync with role
   });
 
@@ -60,21 +60,27 @@ export const signInController = async (req, res, next) => {
       return next(errorHandler(400, "Invalid Password"));
     }
 
-    // 🔥 TOKEN mein role bhi add karo
     const token = jwt.sign(
       {
         id: validUser._id,
         isAdmin: validUser.isAdmin,
-        role: validUser.role, // 🔥 Role add kiya
+        role: validUser.role,
       },
       process.env.JWT_SECRET,
+      { expiresIn: '7d' } //  Add token expiry
     );
 
     const { password: pass, ...rest } = validUser._doc;
+    
+    //  FIXED COOKIE SETTING 
     res
       .status(200)
       .cookie("access_token", token, {
         httpOnly: true,
+        secure: process.env.NODE_ENV === "production", //  true for HTTPS
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", //  CRITICAL
+        maxAge: 7 * 24 * 60 * 60 * 1000, //  7 days
+        path: "/", //  Available on all routes
       })
       .json(rest);
   } catch (error) {
@@ -97,20 +103,26 @@ export const google = async (req, res, next) => {
     const user = await User.findOne({ email });
 
     if (user) {
-      // 🔥 Token mein role add karo
       const token = jwt.sign(
         {
           id: user._id,
           isAdmin: user.isAdmin,
-          role: user.role, // 🔥 Role add kiya
+          role: user.role,
         },
         process.env.JWT_SECRET,
+        { expiresIn: '7d' }
       );
       const { password, ...rest } = user._doc;
+      
+      //  FIXED COOKIE SETTINGS
       res
         .status(200)
         .cookie("access_token", token, {
           httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+          path: "/",
         })
         .json(rest);
     } else {
@@ -119,7 +131,6 @@ export const google = async (req, res, next) => {
         Math.random().toString(36).slice(-8);
       const hashPassword = bcryptjs.hashSync(generatePassword, 10);
 
-      // 🔥 Default role "user" assign karo Google signup par
       const newUser = new User({
         username:
           name.toLowerCase().split(" ").join("") +
@@ -127,8 +138,8 @@ export const google = async (req, res, next) => {
         email,
         password: hashPassword,
         profilePicture: googlePhotoUrl,
-        role: "user", // 🔥 Default role
-        isAdmin: false, // 🔥 Default admin false
+        role: "user",
+        isAdmin: false,
       });
 
       await newUser.save();
@@ -137,15 +148,22 @@ export const google = async (req, res, next) => {
         {
           id: newUser._id,
           isAdmin: newUser.isAdmin,
-          role: newUser.role, // 🔥 Role add kiya
+          role: newUser.role,
         },
         process.env.JWT_SECRET,
+        { expiresIn: '7d' }
       );
       const { password, ...rest } = newUser._doc;
+      
+      //  FIXED COOKIE SETTINGS
       res
         .status(200)
         .cookie("access_token", token, {
           httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+          path: "/",
         })
         .json(rest);
     }
