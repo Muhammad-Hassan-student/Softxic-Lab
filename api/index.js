@@ -11,7 +11,7 @@ import uploadRoutes from "./routes/upload.route.js";
 import cron from "node-cron";
 import { autoApproveExpiredRequests } from "./controller/post.controller.js";
 
-// Optional: Fallback DNS resolver configuration (removed hard block node:dns)
+// Fallback DNS resolver configuration 
 try {
   const dns = await import("node:dns/promises");
   if (dns.setServers && process.env.NODE_ENV !== "production") {
@@ -29,9 +29,7 @@ app.use(cookieParser());
 
 // Database connection logic wrapped globally
 mongoose
-  .connect(
-    `mongodb+srv://softxic_blog:softxicBlog123$$@softxic1.xnstlfr.mongodb.net/blogs`,
-  )
+  .connect(process.env.MONGO_UR)
   .then(() => console.log(`mongoDb is connected successfully`.white))
   .catch((err) => console.log(err));
 
@@ -54,8 +52,8 @@ app.use((err, req, res, next) => {
 });
 
 app.get("/", (req, res) => {
-  res.send('Health is ok🖤')
-})
+  res.send("Health is ok🖤");
+});
 
 // Cron Jobs (Note: Node-cron only stays active while a serverless function is awake)
 cron.schedule("0 * * * *", async () => {
