@@ -481,6 +481,189 @@ export default function AdminAllPosts() {
                         <>
                           <div className="border-t my-1"></div>
                           <button onClick={() => handleApprovePost(post._id)} className="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 flex items-center gap-3 text-green-600">
+                  🔥 FIX: Add credentials
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/updatePostStatus/${postId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: 'include',
+        body: JSON.stringify({ status: newStatus }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showToast(`Post moved to ${newStatus}`, "success");
+        fetchAllPosts();
+      } else {
+        showToast(data.message || "Failed to update status", "error");
+      }
+    } catch (error) {
+      showToast("Something went wrong", "error");
+    } finally {
+      setActionLoading(false);
+      setOpenMenuId(null);
+    }
+  };
+
+  const handleViewPost = (post) => {
+    setSelectedPost(post);
+    setShowViewModal(true);
+    setOpenMenuId(null);
+  };
+
+  const handleImageError = (postId) => setImageErrors(prev => ({ ...prev, [postId]: true }));
+
+  const getTimeRemaining = (autoApproveAt) => {
+    if (!autoApproveAt) return null;
+    const hours = Math.max(0, Math.ceil((new Date(autoApproveAt) - new Date()) / (1000 * 60 * 60)));
+    if (hours === 0) return "Expiring soon";
+    if (hours < 24) return `${hours}h left`;
+    const days = Math.floor(hours / 24);
+    return `${days}d left`;
+  };
+
+  const getStatusBadge = (status, autoApproveAt) => {
+    const timeRemaining = getTimeRemaining(autoApproveAt);
+    
+    switch(status) {
+      case "draft": return <Badge color="gray" size="sm">Draft</Badge>;
+      case "pending": return <Badge color="warning" size="sm">Pending</Badge>;
+      case "published": return <Badge color="success" size="sm">Published</Badge>;
+      case "rejected": return <Badge color="failure" size="sm">Rejected</Badge>;
+      case "pending_edit":
+        return (
+          <div className="flex flex-col items-end">
+            <Badge color="warning" size="sm" className="flex items-center gap-1"><HiRefresh className="w-3 h-3" /> Edit</Badge>
+            {timeRemaining && <span className="text-xs text-amber-600 mt-1">{timeRemaining}</span>}
+          </div>
+        );
+      case "pending_delete":
+        return (
+          <div className="flex flex-col items-end">
+            <Badge color="failure" size="sm" className="flex items-center gap-1"><HiXCircle className="w-3 h-3" /> Delete</Badge>
+            {timeRemaining && <span className="text-xs text-red-600 mt-1">{timeRemaining}</span>}
+          </div>
+        );
+      default: return <Badge color="gray" size="sm">{status}</Badge>;
+    }
+  };
+
+  if (currentUser?.role !== "admin") {
+    return (
+      <div className="flex items-center justify-center min-h-[400px] p-4">
+        <div className="text-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+            <HiOutlineExclamationCircle className="w-8 h-8 text-red-500" />
+          </div>
+          <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300">Access Denied</h2>
+          <p className="text-gray-500 dark:text-gray-400 mt-2">Admin privileges required</p>
+        </div>
+      </div>
+    );
+  }
+
+  const PostCard = ({ post }) => {
+    const hasImageError = imageErrors[post._id];
+    const isOpen = openMenuId === post._id;
+    const timeRemaining = getTimeRemaining(post.autoApproveAt);
+    const isPendingAction = post.status === "pending_edit" || post.status === "pending_delete";
+    
+    return (
+      <div ref={el => menuRefs.current[post._id] = el} className={`bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 p-4 border ${
+        isPendingAction 
+          ? post.status === "pending_edit" 
+            ? 'border-amber-400 bg-amber-50/30 dark:bg-amber-900/10' 
+            : 'border-red-400 bg-red-50/30 dark:bg-red-900/10'
+          : 'border-gray-200 dark:border-gray-700'
+      }`}>
+        <div className="flex gap-4">
+          <div className="flex-shrink-0">
+            {!hasImageError && post.image ? (
+              <img src={post.image} alt={post.title} className="w-16 h-16 object-cover rounded-lg ring-1 ring-gray-200" onError={() => handleImageError(post._id)} loading="lazy" />
+            ) : (
+              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                <HiPhotograph className="w-6 h-6 text-gray-400" />
+              </div>
+            )}
+          </div>
+          
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex-1 min-w-0">
+                <Link to={`/post/${post.slug}`} className="font-semibold text-gray-800 hover:text-teal-600 transition-colors line-clamp-2 text-base">
+                  {post.title}
+                </Link>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5 text-xs text-gray-500">
+                  <span className="flex items-center gap-1.5"><HiUser className="w-3.5 h-3.5" /> {post.userId?.username || "Unknown"}</span>
+                  <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                  <span>{new Date(post.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+                  <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                  <span className="capitalize">{post.category}</span>
+                </div>
+                {post.status === "pending_edit" && post.editRequestData && (
+                  <p className="text-xs text-amber-600 mt-1">Edit requested - Changes pending approval</p>
+                )}
+                {post.status === "pending_delete" && timeRemaining && (
+                  <p className="text-xs text-red-600 mt-1">Delete requested - {timeRemaining}</p>
+                )}
+                {post.status === "rejected" && post.rejectionReason && (
+                  <p className="text-xs text-red-500 mt-1">Reason: {post.rejectionReason}</p>
+                )}
+              </div>
+              
+              <div className="flex items-center gap-2 flex-shrink-0">
+                {getStatusBadge(post.status, post.autoApproveAt)}
+                
+                <button onClick={() => handleViewPost(post)} className="p-2 rounded-lg text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-all" title="Quick View">
+                  <HiEye className="w-5 h-5" />
+                </button>
+                
+                <div className="relative">
+                  <button onClick={(e) => { e.stopPropagation(); setOpenMenuId(isOpen ? null : post._id); }}
+                    className={`p-2 rounded-lg transition-all cursor-pointer ${isOpen ? 'bg-gray-100' : 'text-gray-500 hover:bg-gray-100'}`}
+                    disabled={actionLoading}>
+                    <HiDotsVertical className="w-5 h-5" />
+                  </button>
+                  
+                  {isOpen && (
+                    <div className="dropdown-menu absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-xl border z-50 py-1">
+                      <button onClick={() => handleViewPost(post)} className="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 flex items-center gap-3">
+                        <HiEye className="w-4 h-4 text-blue-500" /> Quick View
+                      </button>
+                      
+                      <Link to={`/update-post/${post._id}`}>
+                        <button onClick={() => setOpenMenuId(null)} className="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 flex items-center gap-3">
+                          <HiPencil className="w-4 h-4 text-emerald-500" /> Edit Post
+                        </button>
+                      </Link>
+                      
+                      <Link to={`/post/${post.slug}`} target="_blank">
+                        <button onClick={() => setOpenMenuId(null)} className="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 flex items-center gap-3">
+                          <HiExternalLink className="w-4 h-4 text-purple-500" /> Open New Tab
+                        </button>
+                      </Link>
+                      
+                      {(post.status === "pending_edit" || post.status === "pending_delete") && (
+                        <>
+                          <div className="border-t my-1"></div>
+                          {post.status === "pending_edit" && (
+                            <button onClick={() => handleApproveEditRequest(post._id)} className="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 flex items-center gap-3 text-green-600">
+                              <HiOutlineCheckCircle className="w-4 h-4" /> Approve Edit
+                            </button>
+                          )}
+                          {post.status === "pending_delete" && (
+                            <button onClick={() => handleApproveDeleteRequest(post._id)} className="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 flex items-center gap-3 text-green-600">
+                              <HiOutlineCheckCircle className="w-4 h-4" /> Approve Delete
+                            </button>
+                          )}
+                          <button onClick={() => { setPostIdToAction(post._id); setShowRejectModal(true); setOpenMenuId(null); }} className="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 flex items-center gap-3 text-red-600">
+                            <HiXCircle className="w-4 h-4" /> Reject Request
+                          </button>
+                        </>
+                      )}
+                      
+                      {(post.status === "pending" || post.status === "draft") && (
+                        <>
+                          <div className="border-t my-1"></div>
+                          <button onClick={() => handleApprovePost(post._id)} className="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 flex items-center gap-3 text-green-600">
                  st) => {
     setSelectedPost(post);
     setShowViewModal(true);
