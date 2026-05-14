@@ -17,7 +17,7 @@ const app = express();
 // CORS Middleware - Important for separate frontend
 app.use((req, res, next) => {
   const allowedOrigins = [
-    "https://labs.softxic.com",
+    "https://labs.softxic.com","https://softxic-lab-git-main-muhammad-hassans-projects-3c820582.vercel.app",
     "http://localhost:5173",
   ].filter(Boolean);
 
