@@ -29,7 +29,7 @@ app.use(cookieParser());
 
 // Database connection logic wrapped globally
 mongoose
-  .connect(process.env.MONGO_UR)
+  .connect(process.env.MONGO_URL)
   .then(() => console.log(`mongoDb is connected successfully`.white))
   .catch((err) => console.log(err));
 
