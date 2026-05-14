@@ -63,6 +63,37 @@ app.get("/health", (req, res) => {
   });
 });
 
+app.get("/api/db-check", (req, res) => {
+  // Mongoose connection state: 0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting
+  const dbState = mongoose.connection.readyState;
+
+  const states = {
+    0: "Disconnected ❌",
+    1: "Connected Successfully ✅",
+    2: "Connecting... ⏳",
+    3: "Disconnecting... ⚠️",
+  };
+
+  if (dbState === 1) {
+    return res.status(200).json({
+      success: true,
+      database_status: states[dbState],
+      connection_code: dbState,
+      message: "Hosting server is perfectly connected to MongoDB Atlas! 🎉",
+      host: mongoose.connection.host,
+      database_name: mongoose.connection.name,
+    });
+  } else {
+    return res.status(500).json({
+      success: false,
+      database_status: states[dbState],
+      connection_code: dbState,
+      message:
+        "Database connection failed or pending! Check environment variables and IP Whitelist.",
+    });
+  }
+});
+
 // Root endpoint
 app.get("/", (req, res) => {
   res.status(200).json({
