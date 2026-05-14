@@ -15,29 +15,29 @@ dotenv.config();
 const app = express();
 
 // CORS Middleware - Important for separate frontend
-// app.use((req, res, next) => {
-//   const allowedOrigins = [
-//     "https://labs.softxic.com","https://softxic-lab-git-main-muhammad-hassans-projects-3c820582.vercel.app",
-//     "http://localhost:5173",
-//   ].filter(Boolean);
+app.use((req, res, next) => {
+  const allowedOrigins = [
+    "https://labs.softxic.com",
+    "https://softxic-lab-git-main-muhammad-hassans-projects-3c820582.vercel.app",
+    "http://localhost:5173",
+  ].filter(Boolean);
 
-//   const origin = req.headers.origin;
-//   if (allowedOrigins.includes(origin)) {
-//     res.header("Access-Control-Allow-Origin", origin);
-//   }
-//   res.header("Access-Control-Allow-Credentials", "true");
-//   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-//   res.header(
-//     "Access-Control-Allow-Headers",
-//     "Content-Type, Authorization, Cookie",
-//   );
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+  }
+  res.header("Access-Control-Allow-Credentials", "true"); // 🔥 CRITICAL
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization, Cookie"
+  );
 
-//   if (req.method === "OPTIONS") {
-//     return res.sendStatus(200);
-//   }
-//   next();
-// });
-
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
 app.use(express.json());
 app.use(cookieParser());
 
