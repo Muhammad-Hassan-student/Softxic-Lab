@@ -11,15 +11,15 @@ import uploadRoutes from "./routes/upload.route.js";
 import cron from "node-cron";
 import { autoApproveExpiredRequests } from "./controller/post.controller.js";
 
-// Fallback DNS resolver configuration 
-try {
-  const dns = await import("node:dns/promises");
-  if (dns.setServers && process.env.NODE_ENV !== "production") {
-    dns.setServers(["1.1.1.1", "8.8.8.8"]);
-  }
-} catch (e) {
-  console.log("DNS optimization skipped");
-}
+// // Fallback DNS resolver configuration
+// try {
+//   const dns = await import("node:dns/promises");
+//   if (dns.setServers && process.env.NODE_ENV !== "production") {
+//     dns.setServers(["1.1.1.1", "8.8.8.8"]);
+//   }
+// } catch (e) {
+//   console.log("DNS optimization skipped");
+// }
 
 dotenv.config();
 const app = express();
