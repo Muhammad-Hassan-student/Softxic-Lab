@@ -54,13 +54,13 @@ export default function DashhPost() {
     try {
       let url = "";
       if (activeTab === "draft") {
-        url = `/api/v1/post/getUserDrafts`;
+        url = `${import.meta.env.VITE_API_URL}/api/v1/post/getUserDrafts`;
       } else if (activeTab === "pending" || activeTab === "pending_edit" || activeTab === "pending_delete") {
-        url = `/api/v1/post/my-posts-status`;
+        url = `${import.meta.env.VITE_API_URL}/api/v1/post/my-posts-status`;
       } else if (activeTab === "published") {
-        url = `/api/v1/post/getUserPublishedPosts`;
+        url = `${import.meta.env.VITE_API_URL}/api/v1/post/getUserPublishedPosts`;
       } else {
-        url = `/api/v1/post/getPosts?userId=${currentUser._id}`;
+        url = `${import.meta.env.VITE_API_URL}/api/v1/post/getPosts?userId=${currentUser._id}`;
       }
 
       const res = await fetch(url);

@@ -27,7 +27,7 @@ export default function PostUpdate() {
     const fetchPost = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`/api/v1/post/getPosts?postId=${postId}`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/getPosts?postId=${postId}`);
         const data = await res.json();
         
         if (!res.ok) {
@@ -69,7 +69,7 @@ export default function PostUpdate() {
     setImageUploadError(null);
     
     try {
-      const res = await fetch('/api/v1/upload/upload', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/upload/upload`, {
         method: 'POST',
         credentials: 'include',
         body: formDataImg,
@@ -100,7 +100,7 @@ const handleSubmit = async (e) => {
   setUpdating(true);
   
   try {
-    const res = await fetch(`/api/v1/post/updatePost/${postId}`, {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/updatePost/${postId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData),

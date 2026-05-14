@@ -82,7 +82,7 @@ export default function Post() {
 
     setActionLoading(true);
     try {
-      const res = await fetch(`/api/v1/post/like/${post._id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/like/${post._id}`, {
         method: "PUT",
       });
       const data = await res.json();
@@ -106,7 +106,7 @@ export default function Post() {
 
     setActionLoading(true);
     try {
-      const res = await fetch(`/api/v1/post/save/${post._id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/save/${post._id}`, {
         method: "PUT",
       });
       const data = await res.json();
@@ -132,7 +132,7 @@ export default function Post() {
     
     // Record share in backend
     try {
-      await fetch(`/api/v1/post/share/${post._id}`, { method: "PUT" });
+      await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/share/${post._id}`, { method: "PUT" });
       setSharesCount(prev => prev + 1);
     } catch (error) {
       console.error("Error recording share:", error);
@@ -168,7 +168,7 @@ export default function Post() {
       try {
         // Fetch like status
         if (currentUser) {
-          const likeRes = await fetch(`/api/v1/post/check-like/${post._id}`);
+          const likeRes = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/check-like/${post._id}`);
           const likeData = await likeRes.json();
           if (likeRes.ok) {
             setLiked(likeData.liked);
@@ -176,7 +176,7 @@ export default function Post() {
           }
 
           // Fetch save status
-          const saveRes = await fetch(`/api/v1/post/check-save/${post._id}`);
+          const saveRes = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/check-save/${post._id}`);
           const saveData = await saveRes.json();
           if (saveRes.ok) {
             setSaved(saveData.saved);
@@ -185,7 +185,7 @@ export default function Post() {
         }
 
         // Fetch share count
-        const shareRes = await fetch(`/api/v1/post/share-count/${post._id}`);
+        const shareRes = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/share-count/${post._id}`);
         const shareData = await shareRes.json();
         if (shareRes.ok) {
           setSharesCount(shareData.numberOfShares);
@@ -204,7 +204,7 @@ export default function Post() {
         setLoading(true);
         setError(false);
         
-        let url = `/api/v1/post/getPosts?slug=${postSlug}`;
+        let url = `${import.meta.env.VITE_API_URL}/api/v1/post/getPosts?slug=${postSlug}`;
         if (currentUser && (isAdmin || isAuthor)) {
           url += `&includeDrafts=true`;
         }
@@ -248,7 +248,7 @@ export default function Post() {
   useEffect(() => {
     const fetchRecentPost = async () => {
       try {
-        const res = await fetch(`/api/v1/post/getPosts?limit=3`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/getPosts?limit=3`);
         const data = await res.json();
         if (res.ok) {
           setRecentPosts(data.posts);
@@ -263,7 +263,7 @@ export default function Post() {
   const handlePublish = async () => {
     setPublishing(true);
     try {
-      const res = await fetch(`/api/v1/post/updatePostStatus/${post._id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/updatePostStatus/${post._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: "published" }),
@@ -290,7 +290,7 @@ export default function Post() {
     setShowDeleteModal(false);
     
     try {
-      const res = await fetch(`/api/v1/post/deletePost/${post._id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/deletePost/${post._id}`, {
         method: "DELETE",
       });
       

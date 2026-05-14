@@ -29,7 +29,7 @@ export default function Comment({ comment, onLike, onEdit, onDelete }) {
       // If userId is just a string ID, fetch from API
       if (comment.userId && typeof comment.userId === 'string') {
         try {
-          const res = await fetch(`/api/v1/user/${comment.userId}`);
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/user/${comment.userId}`);
           const data = await res.json();
           if (res.ok) {
             setUserData({
@@ -82,7 +82,7 @@ export default function Comment({ comment, onLike, onEdit, onDelete }) {
     
     setSaving(true);
     try {
-      const res = await fetch(`/api/v1/comment/editComment/${comment._id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/comment/editComment/${comment._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: editContent }),

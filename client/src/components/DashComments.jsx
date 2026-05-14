@@ -87,7 +87,7 @@ export default function DashComments() {
     const fetchComments = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/v1/comment/getAllUsersComments`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/comment/getAllUsersComments`);
         const data = await res.json();
         if (res.ok) {
           setComments(data.comments);
@@ -111,7 +111,7 @@ export default function DashComments() {
     const startIndex = comments.length;
     try {
       const res = await fetch(
-        `/api/v1/comment/getAllUsersComments?&startIndex=${startIndex}`
+        `${import.meta.env.VITE_API_URL}comment/getAllUsersComments?&startIndex=${startIndex}`
       );
       const data = await res.json();
       if (res.ok) {
@@ -129,7 +129,7 @@ export default function DashComments() {
     setShowModal(false);
     try {
       const res = await fetch(
-        `/api/v1/comment/deleteComment/${commentIdToDelete}`,
+        `${import.meta.env.VITE_API_URL}/api/v1/comment/deleteComment/${commentIdToDelete}`,
         {
           method: "DELETE",
         }

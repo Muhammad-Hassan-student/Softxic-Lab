@@ -23,7 +23,7 @@ export default function SignUp() {
       setErrorMessage(null);
       
       // 🔥 Role ke saath signup request bhejo
-      const res = await fetch("/api/v1/auth/signUp", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/auth/signUp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData), // formData mein role already hai

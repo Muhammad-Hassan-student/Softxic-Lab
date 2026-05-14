@@ -85,7 +85,7 @@ export default function AdminAllPosts() {
     
     setLoading(true);
     try {
-      let url = `/api/v1/post/admin/all-posts?limit=100`;
+      let url = `${import.meta.env.VITE_API_URL}/api/v1/post/admin/all-posts?limit=100`;
       if (filterStatus !== "all") url += `&status=${filterStatus}`;
       if (filterUser) url += `&userId=${filterUser}`;
       
@@ -124,7 +124,7 @@ export default function AdminAllPosts() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch("/api/v1/user/getUsers?limit=100");
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/user/getUsers?limit=100`);
         const data = await res.json();
         if (res.ok) setUsers(data.users);
       } catch (error) { console.error(error); }
@@ -136,7 +136,7 @@ export default function AdminAllPosts() {
     setShowModal(false);
     setActionLoading(true);
     try {
-      const res = await fetch(`/api/v1/post/deletePost/${postIdToDelete}`, { method: "DELETE" });
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/deletePost/${postIdToDelete}`, { method: "DELETE" });
       const data = await res.json();
       if (res.ok) {
         setPosts(prev => prev.filter(post => post._id !== postIdToDelete));
@@ -156,7 +156,7 @@ export default function AdminAllPosts() {
   const handleApprovePost = async (postId) => {
     setActionLoading(true);
     try {
-      const res = await fetch(`/api/v1/post/approve-post/${postId}`, { method: "PUT" });
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/approve-post/${postId}`, { method: "PUT" });
       const data = await res.json();
       if (res.ok) {
         showToast("Post approved and published", "success");
@@ -175,7 +175,7 @@ export default function AdminAllPosts() {
   const handleApproveEditRequest = async (postId) => {
     setActionLoading(true);
     try {
-      const res = await fetch(`/api/v1/post/approve-edit/${postId}`, { method: "PUT" });
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/approve-edit/${postId}`, { method: "PUT" });
       const data = await res.json();
       if (res.ok) {
         showToast("Edit request approved and applied", "success");
@@ -194,7 +194,7 @@ export default function AdminAllPosts() {
   const handleApproveDeleteRequest = async (postId) => {
     setActionLoading(true);
     try {
-      const res = await fetch(`/api/v1/post/approve-delete/${postId}`, { method: "PUT" });
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/approve-delete/${postId}`, { method: "PUT" });
       if (res.ok) {
         showToast("Delete request approved, post removed", "success");
         fetchAllPosts();
@@ -218,7 +218,7 @@ export default function AdminAllPosts() {
     setShowRejectModal(false);
     setActionLoading(true);
     try {
-      const res = await fetch(`/api/v1/post/reject-request/${postIdToAction}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/reject-request/${postIdToAction}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ rejectionReason }),
@@ -247,7 +247,7 @@ export default function AdminAllPosts() {
     setShowRejectModal(false);
     setActionLoading(true);
     try {
-      const res = await fetch(`/api/v1/post/reject-post/${postIdToAction}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/reject-post/${postIdToAction}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ rejectionReason }),
@@ -271,7 +271,7 @@ export default function AdminAllPosts() {
   const handleStatusChange = async (postId, newStatus) => {
     setActionLoading(true);
     try {
-      const res = await fetch(`/api/v1/post/updatePostStatus/${postId}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/updatePostStatus/${postId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),

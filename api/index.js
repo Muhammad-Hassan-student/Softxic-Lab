@@ -17,7 +17,7 @@ const app = express();
 // CORS Middleware - Important for separate frontend
 app.use((req, res, next) => {
   const allowedOrigins = [
-    process.env.FRONTEND_URL,
+    "https://labs.softxic.com",
     "http://localhost:5173",
   ].filter(Boolean);
 

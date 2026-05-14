@@ -19,9 +19,9 @@ export default function Home() {
     const fetchPosts = async () => {
       setLoading(true);
       try {
-        const res = await fetch('/api/v1/post/getPosts?limit=9');
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/getPosts?limit=9`);
         const data = await res.json();
-        
+        console.log(res)
         if (res.ok) {
           const allPosts = data.posts || [];
           setPosts(allPosts);

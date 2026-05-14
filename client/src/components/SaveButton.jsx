@@ -18,7 +18,7 @@ export default function SaveButton({ postId, onSaveChange }) {
       }
 
       try {
-        const res = await fetch(`/api/v1/post/check-save/${postId}`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/check-save/${postId}`);
         const data = await res.json();
         if (res.ok) {
           setSaved(data.saved);
@@ -42,7 +42,7 @@ export default function SaveButton({ postId, onSaveChange }) {
 
     setLoading(true);
     try {
-      const res = await fetch(`/api/v1/post/save/${postId}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/save/${postId}`, {
         method: "PUT",
       });
       const data = await res.json();
