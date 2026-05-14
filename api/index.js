@@ -53,6 +53,10 @@ app.use((err, req, res, next) => {
   });
 });
 
+app.get("/", (req, res) => {
+  res.send('Health is ok🖤')
+})
+
 // Cron Jobs (Note: Node-cron only stays active while a serverless function is awake)
 cron.schedule("0 * * * *", async () => {
   console.log("🔄 Running auto-approval cron job...");
