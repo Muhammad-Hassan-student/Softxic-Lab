@@ -13,10 +13,12 @@ import {
   HiCog,
   HiViewGrid,
   HiHome,
+  HiMailOpen,
 } from "react-icons/hi";
 import { useDispatch } from "react-redux";
 import { signOutSuccess } from "../redux/user/userSlice";
 import { useSelector } from "react-redux";
+import { AiTwotoneMessage } from "react-icons/ai";
 
 export default function DashSidebar() {
   const location = useLocation();
@@ -178,19 +180,14 @@ export default function DashSidebar() {
             </Sidebar.Item>
           </Link>
         )}
+        {currentUser?.role === "admin" && (
+         <Link to={"/dashboard?tab=contact"}>
+  <Sidebar.Item active={tab === "contact"} icon={HiMailOpen} as="div">
+    Contact Messages
+  </Sidebar.Item>
+</Link>
+        )}
 
-        {/* Settings - All Users */}
-        <Link to="/dashboard?tab=settings">
-          <Sidebar.Item
-            active={tab === "settings"}
-            icon={HiCog}
-            as="div"
-            className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-          >
-            Settings
-          </Sidebar.Item>
-        </Link>
-        
         {/* Divider before sign out */}
         <div className="my-2 border-t border-gray-200 dark:border-gray-700"></div>
         

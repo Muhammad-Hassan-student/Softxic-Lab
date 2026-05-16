@@ -76,28 +76,28 @@ export default function FooterComponent() {
                         </h3>
                         <ul className="space-y-2">
                             <li>
-                                <button 
-                                    onClick={() => alert("Privacy Policy coming soon")}
-                                    className="text-sm text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-                                >
-                                    Privacy
-                                </button>
-                            </li>
-                            <li>
-                                <button 
-                                    onClick={() => alert("Terms of Service coming soon")}
+                               <Link 
+                                    to="/terms" 
                                     className="text-sm text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                                 >
                                     Terms
-                                </button>
+                                </Link>
                             </li>
                             <li>
-                                <button 
-                                    onClick={() => alert("Contact information coming soon")}
+                              <Link 
+                                    to="/privacy" 
+                                    className="text-sm text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                                >
+                                    Privacy
+                                </Link>
+                            </li>
+                            <li>
+                              <Link 
+                                    to="/contact" 
                                     className="text-sm text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                                 >
                                     Contact
-                                </button>
+                                </Link>
                             </li>
                         </ul>
                     </div>

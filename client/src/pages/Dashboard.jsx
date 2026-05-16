@@ -18,6 +18,7 @@ import {
   HiShieldCheck,
   HiExclamationCircle
 } from "react-icons/hi";
+import AdminContactMessages from "../components/AdminContactMessages";
 
 export default function Dashboard() {
   const location = useLocation();
@@ -63,6 +64,7 @@ export default function Dashboard() {
     if (tab === "users") return currentUser?.role === "admin";
     if (tab === "comments") return currentUser?.role === "admin";
     if (tab === "dash") return currentUser?.role === "admin";
+    if (tab === "contact") return currentUser?.role === "admin";
     return false;
   };
 
@@ -147,7 +149,9 @@ export default function Dashboard() {
               {tab === "dash" && currentUser?.role === "admin" && (
                 <DashComp />
               )}
+            
 
+  {tab === "contact" && currentUser?.role === "admin" && <AdminContactMessages />}
               {/* Default/Empty State - When no tab selected */}
               {!tab && (
                 <div className="flex flex-col items-center justify-center p-8 min-h-[400px]">

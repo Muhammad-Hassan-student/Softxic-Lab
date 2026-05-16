@@ -18,6 +18,8 @@ import Post from "./pages/Post";
 import ScrollToTop from "./components/ScrollToTop";
 import Search from "./pages/Search";
 import PostById from "./pages/PostId";
+import Contact from "./pages/Contact";
+import Legal from "./pages/Legal";
 
 function App() {
   return (
@@ -29,6 +31,9 @@ function App() {
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+<Route path="/terms" element={<Legal />} />
+<Route path="/privacy" element={<Legal />} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/search" element={<Search />} />
           <Route path="/sign-up" element={<SignUp />} />
