@@ -89,9 +89,13 @@ export default function AdminAllPosts() {
       if (filterStatus !== "all") url += `&status=${filterStatus}`;
       if (filterUser) url += `&userId=${filterUser}`;
       
+<<<<<<< HEAD
       const res = await fetch(url, {
         credentials: "include"
       });
+=======
+      const res = await fetch(url, { credentials: 'include' }); // 🔥 Add credentials
+>>>>>>> 60c77699c4b49806a79e9f43b479d6eacbf887f5
       const data = await res.json();
       
       if (res.ok) {
@@ -126,7 +130,9 @@ export default function AdminAllPosts() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/user/getUsers?limit=100`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/user/getUsers?limit=100`, {
+          credentials: 'include'
+        });
         const data = await res.json();
         if (res.ok) setUsers(data.users);
       } catch (error) { console.error(error); }
@@ -138,7 +144,10 @@ export default function AdminAllPosts() {
     setShowModal(false);
     setActionLoading(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/deletePost/${postIdToDelete}`, { method: "DELETE" });
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/deletePost/${postIdToDelete}`, { 
+        method: "DELETE",
+        credentials: 'include'
+      });
       const data = await res.json();
       if (res.ok) {
         setPosts(prev => prev.filter(post => post._id !== postIdToDelete));
@@ -158,7 +167,10 @@ export default function AdminAllPosts() {
   const handleApprovePost = async (postId) => {
     setActionLoading(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/approve-post/${postId}`, { method: "PUT" });
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/approve-post/${postId}`, { 
+        method: "PUT",
+        credentials: 'include'
+      });
       const data = await res.json();
       if (res.ok) {
         showToast("Post approved and published", "success");
@@ -177,7 +189,10 @@ export default function AdminAllPosts() {
   const handleApproveEditRequest = async (postId) => {
     setActionLoading(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/approve-edit/${postId}`, { method: "PUT" });
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/approve-edit/${postId}`, { 
+        method: "PUT",
+        credentials: 'include'
+      });
       const data = await res.json();
       if (res.ok) {
         showToast("Edit request approved and applied", "success");
@@ -196,7 +211,10 @@ export default function AdminAllPosts() {
   const handleApproveDeleteRequest = async (postId) => {
     setActionLoading(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/approve-delete/${postId}`, { method: "PUT" });
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/approve-delete/${postId}`, { 
+        method: "PUT",
+        credentials: 'include'
+      });
       if (res.ok) {
         showToast("Delete request approved, post removed", "success");
         fetchAllPosts();
@@ -223,6 +241,7 @@ export default function AdminAllPosts() {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/reject-request/${postIdToAction}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
+        credentials: 'include',
         body: JSON.stringify({ rejectionReason }),
       });
       const data = await res.json();
@@ -252,6 +271,7 @@ export default function AdminAllPosts() {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/reject-post/${postIdToAction}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
+        credentials: 'include',
         body: JSON.stringify({ rejectionReason }),
       });
       const data = await res.json();
@@ -276,6 +296,7 @@ export default function AdminAllPosts() {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/updatePostStatus/${postId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
+        credentials: 'include',
         body: JSON.stringify({ status: newStatus }),
       });
       const data = await res.json();
@@ -305,9 +326,9 @@ export default function AdminAllPosts() {
     if (!autoApproveAt) return null;
     const hours = Math.max(0, Math.ceil((new Date(autoApproveAt) - new Date()) / (1000 * 60 * 60)));
     if (hours === 0) return "Expiring soon";
-    if (hours < 24) return `${hours} hour${hours !== 1 ? 's' : ''} left`;
+    if (hours < 24) return `${hours}h left`;
     const days = Math.floor(hours / 24);
-    return `${days} day${days !== 1 ? 's' : ''} left`;
+    return `${days}d left`;
   };
 
   const getStatusBadge = (status, autoApproveAt) => {
@@ -315,20 +336,20 @@ export default function AdminAllPosts() {
     
     switch(status) {
       case "draft": return <Badge color="gray" size="sm">Draft</Badge>;
-      case "pending": return <Badge color="warning" size="sm">Pending Approval</Badge>;
+      case "pending": return <Badge color="warning" size="sm">Pending</Badge>;
       case "published": return <Badge color="success" size="sm">Published</Badge>;
       case "rejected": return <Badge color="failure" size="sm">Rejected</Badge>;
       case "pending_edit":
         return (
           <div className="flex flex-col items-end">
-            <Badge color="warning" size="sm" className="flex items-center gap-1"><HiRefresh className="w-3 h-3" /> Pending Edit</Badge>
+            <Badge color="warning" size="sm" className="flex items-center gap-1"><HiRefresh className="w-3 h-3" /> Edit Req</Badge>
             {timeRemaining && <span className="text-xs text-amber-600 mt-1">{timeRemaining}</span>}
           </div>
         );
       case "pending_delete":
         return (
           <div className="flex flex-col items-end">
-            <Badge color="failure" size="sm" className="flex items-center gap-1"><HiXCircle className="w-3 h-3" /> Pending Delete</Badge>
+            <Badge color="failure" size="sm" className="flex items-center gap-1"><HiXCircle className="w-3 h-3" /> Delete Req</Badge>
             {timeRemaining && <span className="text-xs text-red-600 mt-1">{timeRemaining}</span>}
           </div>
         );
@@ -365,6 +386,7 @@ export default function AdminAllPosts() {
           : 'border-gray-200 dark:border-gray-700'
       }`}>
         <div className="flex gap-4">
+          {/* Thumbnail */}
           <div className="flex-shrink-0">
             {!hasImageError && post.image ? (
               <img src={post.image} alt={post.title} className="w-16 h-16 object-cover rounded-lg ring-1 ring-gray-200" onError={() => handleImageError(post._id)} loading="lazy" />
@@ -375,6 +397,7 @@ export default function AdminAllPosts() {
             )}
           </div>
           
+          {/* Content */}
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
@@ -389,7 +412,7 @@ export default function AdminAllPosts() {
                   <span className="capitalize">{post.category}</span>
                 </div>
                 {post.status === "pending_edit" && post.editRequestData && (
-                  <p className="text-xs text-amber-600 mt-1">📝 Edit requested - Changes pending approval</p>
+                  <p className="text-xs text-amber-600 mt-1">📝 Edit requested - Pending approval</p>
                 )}
                 {post.status === "pending_delete" && timeRemaining && (
                   <p className="text-xs text-red-600 mt-1">⚠️ Delete requested - {timeRemaining}</p>
@@ -399,6 +422,7 @@ export default function AdminAllPosts() {
                 )}
               </div>
               
+              {/* Action Buttons */}
               <div className="flex items-center gap-2 flex-shrink-0">
                 {getStatusBadge(post.status, post.autoApproveAt)}
                 
@@ -406,6 +430,7 @@ export default function AdminAllPosts() {
                   <HiEye className="w-5 h-5" />
                 </button>
                 
+                {/* Dropdown Button */}
                 <div className="relative">
                   <button onClick={(e) => { e.stopPropagation(); setOpenMenuId(isOpen ? null : post._id); }}
                     className={`p-2 rounded-lg transition-all cursor-pointer ${isOpen ? 'bg-gray-100' : 'text-gray-500 hover:bg-gray-100'}`}
@@ -415,34 +440,37 @@ export default function AdminAllPosts() {
                   
                   {isOpen && (
                     <div className="dropdown-menu absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-xl border z-50 py-1">
+                      {/* Quick View */}
                       <button onClick={() => handleViewPost(post)} className="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 flex items-center gap-3">
                         <HiEye className="w-4 h-4 text-blue-500" /> Quick View
                       </button>
                       
+                      {/* Edit Post */}
                       <Link to={`/update-post/${post._id}`}>
                         <button onClick={() => setOpenMenuId(null)} className="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 flex items-center gap-3">
                           <HiPencil className="w-4 h-4 text-emerald-500" /> Edit Post
                         </button>
                       </Link>
                       
+                      {/* Open in New Tab */}
                       <Link to={`/post/${post.slug}`} target="_blank">
                         <button onClick={() => setOpenMenuId(null)} className="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 flex items-center gap-3">
-                          <HiExternalLink className="w-4 h-4 text-purple-500" /> Open in New Tab
+                          <HiExternalLink className="w-4 h-4 text-purple-500" /> Open New Tab
                         </button>
                       </Link>
                       
-                      {/* Pending Actions */}
+                      {/* Pending Actions Section */}
                       {(post.status === "pending_edit" || post.status === "pending_delete") && (
                         <>
                           <div className="border-t my-1"></div>
                           {post.status === "pending_edit" && (
                             <button onClick={() => handleApproveEditRequest(post._id)} className="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 flex items-center gap-3 text-green-600">
-                              <HiOutlineCheckCircle className="w-4 h-4" /> Approve Edit Request
+                              <HiOutlineCheckCircle className="w-4 h-4" /> Approve Edit
                             </button>
                           )}
                           {post.status === "pending_delete" && (
                             <button onClick={() => handleApproveDeleteRequest(post._id)} className="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 flex items-center gap-3 text-green-600">
-                              <HiOutlineCheckCircle className="w-4 h-4" /> Approve Delete Request
+                              <HiOutlineCheckCircle className="w-4 h-4" /> Approve Delete
                             </button>
                           )}
                           <button onClick={() => { setPostIdToAction(post._id); setShowRejectModal(true); setOpenMenuId(null); }} className="w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 flex items-center gap-3 text-red-600">
@@ -451,7 +479,7 @@ export default function AdminAllPosts() {
                         </>
                       )}
                       
-                      {/* Regular Approval */}
+                      {/* Regular Approval Section */}
                       {(post.status === "pending" || post.status === "draft") && (
                         <>
                           <div className="border-t my-1"></div>
@@ -466,9 +494,10 @@ export default function AdminAllPosts() {
                       
                       <div className="border-t my-1"></div>
                       
+                      {/* Change Status */}
                       <div className="px-3 py-2">
                         <label className="text-xs text-gray-500 block mb-2">Change Status</label>
-                        <Select size="sm" value={post.status} onChange={(e) => { handleStatusChange(post._id, e.target.value); setOpenMenuId(null); }} className="w-full">
+                        <Select size="sm" value={post.status} onChange={(e) => { handleStatusChange(post._id, e.target.value); setOpenMenuId(null); }} className="w-full text-sm">
                           <option value="draft">Move to Draft</option>
                           <option value="pending">Mark as Pending</option>
                           <option value="published">Publish Now</option>
@@ -478,6 +507,7 @@ export default function AdminAllPosts() {
                       
                       <div className="border-t my-1"></div>
                       
+                      {/* Delete Post */}
                       <button onClick={() => { setShowModal(true); setPostIdToDelete(post._id); setOpenMenuId(null); }} className="w-full px-4 py-2.5 text-left text-sm hover:bg-red-50 flex items-center gap-3 text-red-600">
                         <HiTrash className="w-4 h-4" /> Delete Post
                       </button>
@@ -507,12 +537,12 @@ export default function AdminAllPosts() {
         <div className="fixed inset-0 bg-black/20 z-40 flex items-center justify-center">
           <div className="bg-white rounded-lg p-4 shadow-xl flex items-center gap-3">
             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-teal-500"></div>
-            <span>Processing...</span>
+            <span className="text-sm">Processing...</span>
           </div>
         </div>
       )}
 
-      {/* Header */}
+      {/* Header Section */}
       <div className="mb-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div>
@@ -532,8 +562,8 @@ export default function AdminAllPosts() {
             { label: "Total", value: stats.totalPosts, color: "blue", icon: HiOutlineDocumentText },
             { label: "Published", value: stats.publishedCount, color: "emerald", icon: HiOutlineCheckCircle },
             { label: "Pending", value: stats.pendingCount, color: "amber", icon: HiOutlineClock },
-            { label: "Pending Edit", value: stats.pendingEditCount, color: "orange", icon: HiRefresh },
-            { label: "Pending Delete", value: stats.pendingDeleteCount, color: "rose", icon: HiXCircle },
+            { label: "Edit Req", value: stats.pendingEditCount, color: "orange", icon: HiRefresh },
+            { label: "Delete Req", value: stats.pendingDeleteCount, color: "rose", icon: HiXCircle },
             { label: "Drafts", value: stats.draftCount, color: "gray", icon: HiPencil },
             { label: "Rejected", value: stats.rejectedCount, color: "red", icon: HiXCircle }
           ].map((stat, idx) => (
@@ -560,7 +590,7 @@ export default function AdminAllPosts() {
             <Select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="w-full">
               <option value="all">All Status</option>
               <option value="published">Published</option>
-              <option value="pending">Pending Approval</option>
+              <option value="pending">Pending</option>
               <option value="pending_edit">Pending Edit</option>
               <option value="pending_delete">Pending Delete</option>
               <option value="draft">Draft</option>
@@ -577,7 +607,7 @@ export default function AdminAllPosts() {
           {(filterStatus !== "all" || filterUser) && (
             <div className="flex items-end">
               <button onClick={() => { setFilterStatus("all"); setFilterUser(""); }} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1">
-                <HiOutlineX className="w-4 h-4" /> Clear Filters
+                <HiOutlineX className="w-4 h-4" /> Clear
               </button>
             </div>
           )}
@@ -617,11 +647,10 @@ export default function AdminAllPosts() {
                 <div className="mb-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
                   <p className="text-sm font-semibold text-amber-800 mb-2">Pending Changes:</p>
                   <p className="text-sm">Title: {selectedPost.editRequestData.title}</p>
-                  <p className="text-sm">Category: {selectedPost.editRequestData.category}</p>
                 </div>
               )}
               {selectedPost.status === "rejected" && selectedPost.rejectionReason && (
-                <div className="mb-4 p-3 bg-red-50 rounded-lg border border-red-200"><p className="text-sm text-red-600">Rejection Reason: {selectedPost.rejectionReason}</p></div>
+                <div className="mb-4 p-3 bg-red-50 rounded-lg border border-red-200"><p className="text-sm text-red-600">Reason: {selectedPost.rejectionReason}</p></div>
               )}
               <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: selectedPost.content }} />
             </div>
@@ -639,7 +668,7 @@ export default function AdminAllPosts() {
             <p className="text-gray-500 text-sm mb-4">Please provide a reason for rejection</p>
             <Textarea placeholder="Enter rejection reason..." value={rejectionReason} onChange={(e) => setRejectionReason(e.target.value)} rows={3} className="mb-4" />
             <div className="flex justify-center gap-3">
-              <Button color="failure" onClick={postIdToAction ? (postIdToAction.startsWith ? handleRejectRequest : handleRejectPost) : handleRejectRequest}>Reject</Button>
+              <Button color="failure" onClick={postIdToAction ? (postIdToAction.length === 24 ? handleRejectPost : handleRejectRequest) : handleRejectRequest}>Reject</Button>
               <Button color="gray" onClick={() => { setShowRejectModal(false); setRejectionReason(""); }}>Cancel</Button>
             </div>
           </div>
@@ -651,7 +680,7 @@ export default function AdminAllPosts() {
         <Modal.Header /><Modal.Body>
           <div className="text-center"><div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center"><HiTrash className="w-8 h-8 text-red-600" /></div>
           <h3 className="mb-2 text-lg font-semibold">Delete this post?</h3><p className="text-gray-500 text-sm mb-4">This action cannot be undone.</p>
-          <div className="flex justify-center gap-3"><Button color="failure" onClick={handleDeletePost}>Yes, Delete</Button><Button color="gray" onClick={() => setShowModal(false)}>Cancel</Button></div></div>
+          <div className="flex justify-center gap-3"><Button color="failure" onClick={handleDeletePost}>Yes, Delete</Button><Button color="gray" onClick={() => setShowModal(false)}>Cancel</Button></div>
         </Modal.Body>
       </Modal>
 
