@@ -16,6 +16,9 @@ import {
   HiX
 } from 'react-icons/hi';
 
+// 🔥 Get API URL from environment variable
+const API_URL = import.meta.env.VITE_API_URL || '';
+
 export default function CreatePost() {
   const [file, setFile] = useState(null);
   const [imageUploadError, setImageUploadError] = useState(null);
@@ -58,14 +61,13 @@ export default function CreatePost() {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       setFile(selectedFile);
-      // Create preview URL
       const previewUrl = URL.createObjectURL(selectedFile);
       setPreviewImage(previewUrl);
       setImageUploadError(null);
     }
   };
 
-  // Upload to Cloudinary via Backend
+  // 🔥 FIXED: Upload to Cloudinary via Backend with absolute URL
   const handleUploadImage = async () => {
     if (!file) {
       setImageUploadError('Please select an image first');
@@ -84,7 +86,8 @@ export default function CreatePost() {
     setImageUploadError(null);
     
     try {
-      const res = await fetch('/api/v1/upload/upload', {
+      // 🔥 FIX: Use absolute URL with API_URL
+      const res = await fetch(`${API_URL}/api/v1/upload/upload`, {
         method: 'POST',
         credentials: 'include',
         body: formDataImg,
@@ -112,6 +115,7 @@ export default function CreatePost() {
     }
   };
 
+  // 🔥 FIXED: Submit post with absolute URL
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -128,9 +132,11 @@ export default function CreatePost() {
     setPublishError(null);
     
     try {
-      const res = await fetch('/api/v1/post/create', {
+      // 🔥 FIX: Use absolute URL with API_URL
+      const res = await fetch(`${API_URL}/api/v1/post/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(formData),
       });
       
@@ -142,7 +148,6 @@ export default function CreatePost() {
         return;
       }
       
-      // Conditional Navigation
       if (formData.status === 'published') {
         navigate(`/post/${data.slug}`);
       } else {
@@ -299,7 +304,7 @@ export default function CreatePost() {
                 ) : (
                   <>
                     <HiCloudUpload className="w-4 h-4 mr-2" />
-                    Upload Image
+                    Upload
                   </>
                 )}
               </Button>
@@ -365,12 +370,12 @@ export default function CreatePost() {
               {imageUploadProgress ? (
                 <>
                   <Spinner size="sm" className="mr-2" />
-                  Uploading Image...
+                  Uploading...
                 </>
               ) : isSubmitting ? (
                 <>
                   <Spinner size="sm" className="mr-2" />
-                  Creating Post...
+                  Creating...
                 </>
               ) : formData.status === "published" ? (
                 <>
@@ -380,7 +385,7 @@ export default function CreatePost() {
               ) : (
                 <>
                   <HiDocumentText className="w-5 h-5 mr-2" />
-                  Save as Draft
+                  Save Draft
                 </>
               )}
             </Button>

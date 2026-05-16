@@ -38,6 +38,10 @@ export default function Header() {
         try {
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/user/signOut`, {
                 method: 'POST',
+                credentials: "include",
+      headers: {
+        'Content-Type': 'application/json',
+      }
             });
             const data = await res.json();
             if (!res.ok) {

@@ -25,7 +25,10 @@ export default function ShareButton({ postId, postTitle, postSlug }) {
 
     // Record share in backend
     try {
-      await fetch(`/api/v1/post/share/${postId}`, { method: "PUT" });
+      await fetch(`/api/v1/post/share/${postId}`, { method: "PUT" ,credentials: "include",
+      headers: {
+        'Content-Type': 'application/json',
+      }});
     } catch (error) {
       console.error("Error recording share:", error);
     }

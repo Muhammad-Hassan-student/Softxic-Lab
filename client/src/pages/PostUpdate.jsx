@@ -71,7 +71,10 @@ export default function PostUpdate() {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/upload/upload`, {
         method: 'POST',
-        credentials: 'include',
+        credentials: "include",
+      headers: {
+        'Content-Type': 'application/json',
+      },
         body: formDataImg,
       });
       
@@ -103,6 +106,10 @@ const handleSubmit = async (e) => {
     const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/updatePost/${postId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
+      credentials: "include",
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(formData),
     });
     

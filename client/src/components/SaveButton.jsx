@@ -18,7 +18,10 @@ export default function SaveButton({ postId, onSaveChange }) {
       }
 
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/check-save/${postId}`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/check-save/${postId}`,{credentials: "include",
+      headers: {
+        'Content-Type': 'application/json',
+      }});
         const data = await res.json();
         if (res.ok) {
           setSaved(data.saved);
@@ -44,6 +47,10 @@ export default function SaveButton({ postId, onSaveChange }) {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/save/${postId}`, {
         method: "PUT",
+        credentials: "include",
+      headers: {
+        'Content-Type': 'application/json',
+      }
       });
       const data = await res.json();
 

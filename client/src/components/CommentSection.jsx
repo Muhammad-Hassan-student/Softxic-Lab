@@ -68,6 +68,8 @@ export default function CommentSection({ postId }) {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/comment/create`, {
         method: "POST",
+                credentials: "include",
+
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           content: comment,
@@ -97,6 +99,10 @@ export default function CommentSection({ postId }) {
       }
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/comment/likeComment/${commentId}`, {
         method: "PUT",
+        credentials: "include",
+      headers: {
+        'Content-Type': 'application/json',
+      }
       });
       if (res.ok) {
         const data = await res.json();
@@ -133,7 +139,12 @@ export default function CommentSection({ postId }) {
         return;
       }
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/comment/deleteComment/${commentId}`, {
+        
         method: "DELETE",
+        credentials: "include",
+      headers: {
+        'Content-Type': 'application/json',
+      }
       });
       if (res.ok) {
         setComments(comments.filter((comment) => comment._id !== commentId));

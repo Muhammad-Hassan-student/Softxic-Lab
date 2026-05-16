@@ -124,6 +124,8 @@ export default function DashProfile() {
       const res = await fetch(`/api/v1/user/update/${currentUser._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
+                credentials: "include",
+
         body: JSON.stringify(formData),
       });
       
@@ -149,6 +151,10 @@ export default function DashProfile() {
       dispatch(deleteUserStart());
       const res = await fetch(`/api/v1/user/delete/${currentUser._id}`, {
         method: "DELETE",
+        credentials: "include",
+      headers: {
+        'Content-Type': 'application/json',
+      }
       });
       const data = await res.json();
       if (!res.ok) {
@@ -165,6 +171,10 @@ export default function DashProfile() {
     try {
       const res = await fetch('/api/v1/user/signOut', {
         method: 'POST',
+        credentials: "include",
+      headers: {
+        'Content-Type': 'application/json',
+      }
       });
       const data = await res.json();
       if (!res.ok) {

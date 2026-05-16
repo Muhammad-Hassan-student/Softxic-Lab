@@ -63,7 +63,12 @@ export default function DashhPost() {
         url = `${import.meta.env.VITE_API_URL}/api/v1/post/getPosts?userId=${currentUser._id}`;
       }
 
-      const res = await fetch(url);
+      const res = await fetch(url, {
+        credentials: "include",
+      headers: {
+        'Content-Type': 'application/json',
+      }
+      });
       const data = await res.json();
 
       if (res.ok) {
@@ -96,6 +101,8 @@ export default function DashhPost() {
     setSubmittingId(postId);
     try {
       const res = await fetch(`/api/v1/post/submit-for-approval/${postId}`, {
+                credentials: "include",
+
         method: "PUT",
         headers: { "Content-Type": "application/json" },
       });
@@ -119,6 +126,8 @@ export default function DashhPost() {
       const res = await fetch(`/api/v1/post/request-delete/${postId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
+              credentials: "include",
+
       });
       const data = await res.json();
       if (res.ok) {
@@ -135,7 +144,10 @@ export default function DashhPost() {
   const handleDeletePost = async () => {
     setShowModal(false);
     try {
-      const res = await fetch(`/api/v1/post/deletePost/${postIdToDelete}`, { method: "DELETE" });
+      const res = await fetch(`/api/v1/post/deletePost/${postIdToDelete}`, { method: "DELETE" ,credentials: "include",
+      headers: {
+        'Content-Type': 'application/json',
+      }});
       if (res.ok) {
         setUserPosts((prev) => prev.filter((post) => post._id !== postIdToDelete));
         showToast("Post deleted successfully", "success");

@@ -111,7 +111,13 @@ export default function DashComments() {
     const startIndex = comments.length;
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL}comment/getAllUsersComments?&startIndex=${startIndex}`
+        `${import.meta.env.VITE_API_URL}comment/getAllUsersComments?&startIndex=${startIndex}`,
+        {
+          credentials: "include",
+      headers: {
+        'Content-Type': 'application/json',
+      }
+        }
       );
       const data = await res.json();
       if (res.ok) {
@@ -132,6 +138,10 @@ export default function DashComments() {
         `${import.meta.env.VITE_API_URL}/api/v1/comment/deleteComment/${commentIdToDelete}`,
         {
           method: "DELETE",
+          credentials: "include",
+      headers: {
+        'Content-Type': 'application/json',
+      }
         }
       );
       const data = await res.json();

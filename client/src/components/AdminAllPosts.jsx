@@ -80,47 +80,50 @@ export default function AdminAllPosts() {
   }, [openMenuId]);
 
   // Fetch all posts
-  const fetchAllPosts = useCallback(async () => {
-    if (currentUser?.role !== "admin") return;
+  // Fetch all posts
+const fetchAllPosts = useCallback(async () => {
+  if (currentUser?.role !== "admin") return;
+  
+  setLoading(true);
+  try {
+    let url = `${import.meta.env.VITE_API_URL}/api/v1/post/admin/all-posts?limit=100`;
+    if (filterStatus !== "all") url += `&status=${filterStatus}`;
+    if (filterUser) url += `&userId=${filterUser}`;
     
-    setLoading(true);
-    try {
-      let url = `${import.meta.env.VITE_API_URL}/api/v1/post/admin/all-posts?limit=100`;
-      if (filterStatus !== "all") url += `&status=${filterStatus}`;
-      if (filterUser) url += `&userId=${filterUser}`;
-      
-
-      const res = await fetch(url, {
-        credentials: "include"
-      });
-
-      const res = await fetch(url, { credentials: 'include' }); // 🔥 Add credentials
-
-      const data = await res.json();
-      
-      if (res.ok) {
-        let filteredPosts = data.posts || [];
-        if (filterStatus === "pending") {
-          filteredPosts = filteredPosts.filter(post => post.userId?._id !== currentUser._id);
-        }
-        setPosts(filteredPosts);
-        setStats({
-          totalPosts: data.totalPosts,
-          draftCount: data.draftCount,
-          publishedCount: data.publishedCount,
-          pendingCount: filteredPosts.filter(p => p.status === "pending").length,
-          rejectedCount: data.rejectedCount || 0,
-          pendingEditCount: data.posts?.filter(p => p.status === "pending_edit").length || 0,
-          pendingDeleteCount: data.posts?.filter(p => p.status === "pending_delete").length || 0,
-        });
+    const res = await fetch(url, {
+      credentials: "include",
+      headers: {
+        'Content-Type': 'application/json',
       }
-    } catch (error) {
-      console.error("Fetch error:", error);
-      showToast("Failed to fetch posts", "error");
-    } finally {
-      setLoading(false);
+    });
+
+    const data = await res.json();
+    
+    if (res.ok) {
+      let filteredPosts = data.posts || [];
+      if (filterStatus === "pending") {
+        filteredPosts = filteredPosts.filter(post => post.userId?._id !== currentUser._id);
+      }
+      setPosts(filteredPosts);
+      setStats({
+        totalPosts: data.totalPosts,
+        draftCount: data.draftCount,
+        publishedCount: data.publishedCount,
+        pendingCount: filteredPosts.filter(p => p.status === "pending").length,
+        rejectedCount: data.rejectedCount || 0,
+        pendingEditCount: data.posts?.filter(p => p.status === "pending_edit").length || 0,
+        pendingDeleteCount: data.posts?.filter(p => p.status === "pending_delete").length || 0,
+      });
+    } else {
+      showToast(data.message || "Failed to fetch posts", "error");
     }
-  }, [currentUser, filterStatus, filterUser]);
+  } catch (error) {
+    console.error("Fetch error:", error);
+    showToast("Failed to fetch posts", "error");
+  } finally {
+    setLoading(false);
+  }
+}, [currentUser, filterStatus, filterUser]);
 
   useEffect(() => {
     fetchAllPosts();
@@ -630,7 +633,7 @@ export default function AdminAllPosts() {
         <div className="space-y-3">{posts.map((post) => <PostCard key={post._id} post={post} />)}</div>
       )}
       
-      {/* View Post Modal */}
+       {/* View Post Modal */}
       <Modal show={showViewModal} onClose={() => setShowViewModal(false)} size="4xl">
         <Modal.Header>Post Preview</Modal.Header>
         <Modal.Body>
@@ -647,10 +650,11 @@ export default function AdminAllPosts() {
                 <div className="mb-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
                   <p className="text-sm font-semibold text-amber-800 mb-2">Pending Changes:</p>
                   <p className="text-sm">Title: {selectedPost.editRequestData.title}</p>
+                  <p className="text-sm">Category: {selectedPost.editRequestData.category}</p>
                 </div>
               )}
               {selectedPost.status === "rejected" && selectedPost.rejectionReason && (
-                <div className="mb-4 p-3 bg-red-50 rounded-lg border border-red-200"><p className="text-sm text-red-600">Reason: {selectedPost.rejectionReason}</p></div>
+                <div className="mb-4 p-3 bg-red-50 rounded-lg border border-red-200"><p className="text-sm text-red-600">Rejection Reason: {selectedPost.rejectionReason}</p></div>
               )}
               <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: selectedPost.content }} />
             </div>
@@ -668,7 +672,7 @@ export default function AdminAllPosts() {
             <p className="text-gray-500 text-sm mb-4">Please provide a reason for rejection</p>
             <Textarea placeholder="Enter rejection reason..." value={rejectionReason} onChange={(e) => setRejectionReason(e.target.value)} rows={3} className="mb-4" />
             <div className="flex justify-center gap-3">
-              <Button color="failure" onClick={postIdToAction ? (postIdToAction.length === 24 ? handleRejectPost : handleRejectRequest) : handleRejectRequest}>Reject</Button>
+              <Button color="failure" onClick={postIdToAction ? (postIdToAction.startsWith ? handleRejectRequest : handleRejectPost) : handleRejectRequest}>Reject</Button>
               <Button color="gray" onClick={() => { setShowRejectModal(false); setRejectionReason(""); }}>Cancel</Button>
             </div>
           </div>
@@ -680,7 +684,7 @@ export default function AdminAllPosts() {
         <Modal.Header /><Modal.Body>
           <div className="text-center"><div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center"><HiTrash className="w-8 h-8 text-red-600" /></div>
           <h3 className="mb-2 text-lg font-semibold">Delete this post?</h3><p className="text-gray-500 text-sm mb-4">This action cannot be undone.</p>
-          <div className="flex justify-center gap-3"><Button color="failure" onClick={handleDeletePost}>Yes, Delete</Button><Button color="gray" onClick={() => setShowModal(false)}>Cancel</Button></div>
+          <div className="flex justify-center gap-3"><Button color="failure" onClick={handleDeletePost}>Yes, Delete</Button><Button color="gray" onClick={() => setShowModal(false)}>Cancel</Button></div></div>
         </Modal.Body>
       </Modal>
 
