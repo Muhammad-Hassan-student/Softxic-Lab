@@ -89,7 +89,9 @@ export default function AdminAllPosts() {
       if (filterStatus !== "all") url += `&status=${filterStatus}`;
       if (filterUser) url += `&userId=${filterUser}`;
       
-      const res = await fetch(url);
+      const res = await fetch(url, {
+        credentials: "include"
+      });
       const data = await res.json();
       
       if (res.ok) {

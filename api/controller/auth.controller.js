@@ -75,6 +75,10 @@ export const signInController = async (req, res, next) => {
       .status(200)
       .cookie("access_token", token, {
         httpOnly: true,
+        secure: true, // 🔥 Always true for HTTPS (Vercel)
+        sameSite: "none", // 🔥 CRITICAL for cross-origin
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        path: "/",
       })
       .json(rest);
   } catch (error) {
@@ -111,6 +115,10 @@ export const google = async (req, res, next) => {
         .status(200)
         .cookie("access_token", token, {
           httpOnly: true,
+          secure: true, // 🔥 Always true for HTTPS (Vercel)
+          sameSite: "none", // 🔥 CRITICAL for cross-origin
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+          path: "/",
         })
         .json(rest);
     } else {
@@ -140,12 +148,18 @@ export const google = async (req, res, next) => {
           role: newUser.role, // 🔥 Role add kiya
         },
         process.env.JWT_SECRET,
+
+        { expiresIn: "7d" }, // 🔥 ADD THIS
       );
       const { password, ...rest } = newUser._doc;
       res
         .status(200)
         .cookie("access_token", token, {
           httpOnly: true,
+          secure: true, // 🔥 Always true for HTTPS (Vercel)
+          sameSite: "none", // 🔥 CRITICAL for cross-origin
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+          path: "/",
         })
         .json(rest);
     }
