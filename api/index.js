@@ -8,6 +8,7 @@ import authRoutes from "./routes/auth.route.js";
 import postRoutes from "./routes/post.route.js";
 import commentRoutes from "./routes/comment.route.js";
 import uploadRoutes from "./routes/upload.route.js";
+import contactRoutes from "./routes/contact.route.js";
 import cron from "node-cron";
 import { autoApproveExpiredRequests } from "./controller/post.controller.js";
 
@@ -30,7 +31,7 @@ app.use((req, res, next) => {
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   res.header(
     "Access-Control-Allow-Headers",
-    "Content-Type, Authorization, Cookie"
+    "Content-Type, Authorization, Cookie",
   );
 
   if (req.method === "OPTIONS") {
@@ -53,6 +54,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/post", postRoutes);
 app.use("/api/v1/comment", commentRoutes);
 app.use("/api/v1/upload", uploadRoutes);
+app.use("/api/v1/contact", contactRoutes);
 
 // Health check endpoint
 app.get("/health", (req, res) => {
