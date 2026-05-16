@@ -89,13 +89,13 @@ export default function AdminAllPosts() {
       if (filterStatus !== "all") url += `&status=${filterStatus}`;
       if (filterUser) url += `&userId=${filterUser}`;
       
-<<<<<<< HEAD
+
       const res = await fetch(url, {
         credentials: "include"
       });
-=======
+
       const res = await fetch(url, { credentials: 'include' }); // 🔥 Add credentials
->>>>>>> 60c77699c4b49806a79e9f43b479d6eacbf887f5
+
       const data = await res.json();
       
       if (res.ok) {

@@ -19,7 +19,7 @@ export const signUpController = async (req, res, next) => {
 
   const hashPassword = bcryptjs.hashSync(password, 10);
 
-  //  Role validation: Sirf "author" ya "user" allow karo (admin manually assign hoga)
+  // 🔥 Role validation: Sirf "author" ya "user" allow karo (admin manually assign hoga)
   let userRole = "user";
   if (role && (role === "author" || role === "user")) {
     userRole = role;
@@ -29,7 +29,7 @@ export const signUpController = async (req, res, next) => {
     username,
     email,
     password: hashPassword,
-    role: userRole, //  Role save karo
+    role: userRole, // 🔥 Role save karo
     isAdmin: userRole === "admin" ? true : false, // 🔥 isAdmin sync with role
   });
 
@@ -60,34 +60,25 @@ export const signInController = async (req, res, next) => {
       return next(errorHandler(400, "Invalid Password"));
     }
 
+    // 🔥 TOKEN mein role bhi add karo
     const token = jwt.sign(
       {
         id: validUser._id,
         isAdmin: validUser.isAdmin,
-        role: validUser.role,
+        role: validUser.role, // 🔥 Role add kiya
       },
       process.env.JWT_SECRET,
-      { expiresIn: '7d' } //  Add token expiry
     );
 
     const { password: pass, ...rest } = validUser._doc;
-    
-    //  FIXED COOKIE SETTING 
     res
       .status(200)
       .cookie("access_token", token, {
         httpOnly: true,
-<<<<<<< HEAD
         secure: true, // 🔥 Always true for HTTPS (Vercel)
         sameSite: "none", // 🔥 CRITICAL for cross-origin
         maxAge: 7 * 24 * 60 * 60 * 1000,
         path: "/",
-=======
-        secure: process.env.NODE_ENV === "production", //  true for HTTPS
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", //  CRITICAL
-        maxAge: 7 * 24 * 60 * 60 * 1000, //  7 days
-        path: "/", //  Available on all routes
->>>>>>> 60c77699c4b49806a79e9f43b479d6eacbf887f5
       })
       .json(rest);
   } catch (error) {
@@ -110,29 +101,22 @@ export const google = async (req, res, next) => {
     const user = await User.findOne({ email });
 
     if (user) {
+      // 🔥 Token mein role add karo
       const token = jwt.sign(
         {
           id: user._id,
           isAdmin: user.isAdmin,
-          role: user.role,
+          role: user.role, // 🔥 Role add kiya
         },
         process.env.JWT_SECRET,
-        { expiresIn: '7d' }
       );
       const { password, ...rest } = user._doc;
-      
-      //  FIXED COOKIE SETTINGS
       res
         .status(200)
         .cookie("access_token", token, {
           httpOnly: true,
-<<<<<<< HEAD
           secure: true, // 🔥 Always true for HTTPS (Vercel)
           sameSite: "none", // 🔥 CRITICAL for cross-origin
-=======
-          secure: process.env.NODE_ENV === "production",
-          sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
->>>>>>> 60c77699c4b49806a79e9f43b479d6eacbf887f5
           maxAge: 7 * 24 * 60 * 60 * 1000,
           path: "/",
         })
@@ -143,6 +127,7 @@ export const google = async (req, res, next) => {
         Math.random().toString(36).slice(-8);
       const hashPassword = bcryptjs.hashSync(generatePassword, 10);
 
+      // 🔥 Default role "user" assign karo Google signup par
       const newUser = new User({
         username:
           name.toLowerCase().split(" ").join("") +
@@ -150,8 +135,8 @@ export const google = async (req, res, next) => {
         email,
         password: hashPassword,
         profilePicture: googlePhotoUrl,
-        role: "user",
-        isAdmin: false,
+        role: "user", // 🔥 Default role
+        isAdmin: false, // 🔥 Default admin false
       });
 
       await newUser.save();
@@ -160,30 +145,19 @@ export const google = async (req, res, next) => {
         {
           id: newUser._id,
           isAdmin: newUser.isAdmin,
-          role: newUser.role,
+          role: newUser.role, // 🔥 Role add kiya
         },
         process.env.JWT_SECRET,
-<<<<<<< HEAD
 
         { expiresIn: "7d" }, // 🔥 ADD THIS
-=======
-        { expiresIn: '7d' }
->>>>>>> 60c77699c4b49806a79e9f43b479d6eacbf887f5
       );
       const { password, ...rest } = newUser._doc;
-      
-      //  FIXED COOKIE SETTINGS
       res
         .status(200)
         .cookie("access_token", token, {
           httpOnly: true,
-<<<<<<< HEAD
           secure: true, // 🔥 Always true for HTTPS (Vercel)
           sameSite: "none", // 🔥 CRITICAL for cross-origin
-=======
-          secure: process.env.NODE_ENV === "production",
-          sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
->>>>>>> 60c77699c4b49806a79e9f43b479d6eacbf887f5
           maxAge: 7 * 24 * 60 * 60 * 1000,
           path: "/",
         })
