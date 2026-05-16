@@ -17,13 +17,13 @@ import {
   approveDeleteRequest,
   rejectRequest,
   likePost, //
-  checkUserLike, 
+  checkUserLike,
   getUserLikedPosts,
   sharePost,
   getShareCount,
   savePost,
   checkUserSave,
-  getUserSavedPosts, 
+  getUserSavedPosts,
 } from "../controller/post.controller.js";
 import { verifyToken, isAdmin } from "../utils/verifyUser.js";
 import express from "express";
@@ -32,6 +32,8 @@ const router = express.Router();
 
 // ==================== PUBLIC ROUTES ====================
 router.get("/getPosts", getPosts);
+router.get("/check-like/:postId", checkUserLike);
+router.get("/check-save/:postId", checkUserSave);
 
 // ==================== PROTECTED ROUTES ====================
 router.post("/create", verifyToken, create);
@@ -43,7 +45,6 @@ router.put("/updatePostStatus/:postId", verifyToken, updatePostStatus);
 
 // ==================== POST LIKES SYSTEM ====================
 router.put("/like/:postId", verifyToken, likePost);
-router.get("/check-like/:postId", verifyToken, checkUserLike);
 router.get("/user-liked-posts/:userId", verifyToken, getUserLikedPosts);
 
 // ==================== APPROVAL SYSTEM ====================
@@ -57,7 +58,6 @@ router.get("/share-count/:postId", getShareCount);
 
 // ==================== POST SAVE/BOOKMARK SYSTEM ====================
 router.put("/save/:postId", verifyToken, savePost);
-router.get("/check-save/:postId", verifyToken, checkUserSave);
 router.get("/user-saved-posts/:userId", verifyToken, getUserSavedPosts);
 // ==================== REQUEST SYSTEM (Edit/Delete) ====================
 router.put("/request-edit/:postId", verifyToken, requestEditPost);

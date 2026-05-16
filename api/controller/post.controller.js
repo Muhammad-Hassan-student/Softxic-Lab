@@ -637,6 +637,7 @@ export const autoApproveExpiredRequests = async () => {
   }
 };
 
+// ==================== POST LIKES SYSTEM ====================
 export const likePost = async (req, res, next) => {
   const { postId } = req.params;
   const userId = req.user.id;
@@ -647,15 +648,12 @@ export const likePost = async (req, res, next) => {
       return next(errorHandler(404, "Post not found"));
     }
 
-    // Check if user already liked the post
     const userIndex = post.likes.indexOf(userId);
 
     if (userIndex === -1) {
-      // User hasn't liked - add like
       post.likes.push(userId);
       post.numberOfLikes += 1;
     } else {
-      // User already liked - remove like
       post.likes.splice(userIndex, 1);
       post.numberOfLikes -= 1;
     }
@@ -672,14 +670,10 @@ export const likePost = async (req, res, next) => {
   }
 };
 
-//  Check if user liked a post
+// 🔥 PUBLIC - Check if user liked a post (no token required)
 export const checkUserLike = async (req, res, next) => {
   const { postId } = req.params;
   const userId = req.user?.id;
-
-  if (!userId) {
-    return res.status(200).json({ liked: false });
-  }
 
   try {
     const post = await Post.findById(postId);
@@ -687,8 +681,14 @@ export const checkUserLike = async (req, res, next) => {
       return next(errorHandler(404, "Post not found"));
     }
 
-    const liked = post.likes.includes(userId);
+    if (!userId) {
+      return res.status(200).json({
+        liked: false,
+        numberOfLikes: post.numberOfLikes,
+      });
+    }
 
+    const liked = post.likes.includes(userId);
     res.status(200).json({
       liked,
       numberOfLikes: post.numberOfLikes,
@@ -698,7 +698,7 @@ export const checkUserLike = async (req, res, next) => {
   }
 };
 
-//  Get posts liked by user
+// Get posts liked by user (protected)
 export const getUserLikedPosts = async (req, res, next) => {
   const { userId } = req.params;
 
@@ -716,10 +716,8 @@ export const getUserLikedPosts = async (req, res, next) => {
     next(error);
   }
 };
-
 // ==================== POST SHARE ====================
 
-//  Share a post (increment share count)
 export const sharePost = async (req, res, next) => {
   const { postId } = req.params;
   const userId = req.user.id;
@@ -730,14 +728,12 @@ export const sharePost = async (req, res, next) => {
       return next(errorHandler(404, "Post not found"));
     }
 
-    // Check if user already shared
     const userIndex = post.shares.indexOf(userId);
 
     if (userIndex === -1) {
       post.shares.push(userId);
       post.numberOfShares += 1;
     }
-    // If already shared, don't count again (prevent spam)
 
     await post.save();
 
@@ -750,7 +746,7 @@ export const sharePost = async (req, res, next) => {
   }
 };
 
-//  Get share count
+// Get share count - PUBLIC
 export const getShareCount = async (req, res, next) => {
   const { postId } = req.params;
 
@@ -767,7 +763,6 @@ export const getShareCount = async (req, res, next) => {
     next(error);
   }
 };
-
 // ==================== POST SAVE/BOOKMARK ====================
 
 // 🔥 Save or Unsave a post
@@ -805,14 +800,10 @@ export const savePost = async (req, res, next) => {
   }
 };
 
-// 🔥 Check if user saved a post
+// 🔥 PUBLIC - Check if user saved a post (no token required)
 export const checkUserSave = async (req, res, next) => {
   const { postId } = req.params;
   const userId = req.user?.id;
-
-  if (!userId) {
-    return res.status(200).json({ saved: false });
-  }
 
   try {
     const post = await Post.findById(postId);
@@ -820,8 +811,14 @@ export const checkUserSave = async (req, res, next) => {
       return next(errorHandler(404, "Post not found"));
     }
 
-    const saved = post.savedBy.includes(userId);
+    if (!userId) {
+      return res.status(200).json({
+        saved: false,
+        numberOfSaves: post.numberOfSaves,
+      });
+    }
 
+    const saved = post.savedBy.includes(userId);
     res.status(200).json({
       saved,
       numberOfSaves: post.numberOfSaves,
@@ -830,8 +827,7 @@ export const checkUserSave = async (req, res, next) => {
     next(error);
   }
 };
-
-//  Get user's saved posts
+// Get user's saved posts (protected)
 export const getUserSavedPosts = async (req, res, next) => {
   const { userId } = req.params;
 

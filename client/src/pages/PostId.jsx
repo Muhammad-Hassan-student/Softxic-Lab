@@ -123,8 +123,9 @@ export default function DashProfile() {
       dispatch(updateInStart());
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/user/update/${currentUser._id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+       credentials: "include",
+
+        headers: { "Content-Type": "application/json" },        body: JSON.stringify(formData),
       });
       
       const data = await res.json();
@@ -149,6 +150,9 @@ export default function DashProfile() {
       dispatch(deleteUserStart());
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/user/delete/${currentUser._id}`, {
         method: "DELETE",
+               credentials: "include",
+
+        headers: { "Content-Type": "application/json" },
       });
       const data = await res.json();
       if (!res.ok) {
@@ -165,6 +169,9 @@ export default function DashProfile() {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/user/signOut`, {
         method: 'POST',
+               credentials: "include",
+
+        headers: { "Content-Type": "application/json" },
       });
       const data = await res.json();
       if (!res.ok) {

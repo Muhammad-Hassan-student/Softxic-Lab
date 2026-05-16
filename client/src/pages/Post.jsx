@@ -84,6 +84,10 @@ export default function Post() {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/like/${post._id}`, {
         method: "PUT",
+               credentials: "include",
+
+        headers: { "Content-Type": "application/json" },
+
       });
       const data = await res.json();
       if (res.ok) {
@@ -108,6 +112,9 @@ export default function Post() {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/save/${post._id}`, {
         method: "PUT",
+               credentials: "include",
+
+        headers: { "Content-Type": "application/json" },
       });
       const data = await res.json();
       if (res.ok) {
@@ -132,7 +139,9 @@ export default function Post() {
     
     // Record share in backend
     try {
-      await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/share/${post._id}`, { method: "PUT" });
+      await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/share/${post._id}`, { method: "PUT" ,        credentials: "include",
+
+        headers: { "Content-Type": "application/json" },});
       setSharesCount(prev => prev + 1);
     } catch (error) {
       console.error("Error recording share:", error);
@@ -265,6 +274,9 @@ export default function Post() {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/updatePostStatus/${post._id}`, {
         method: "PUT",
+               credentials: "include",
+
+       
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: "published" }),
       });
@@ -292,6 +304,9 @@ export default function Post() {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/deletePost/${post._id}`, {
         method: "DELETE",
+               credentials: "include",
+
+        headers: { "Content-Type": "application/json" },
       });
       
       if (res.ok) {

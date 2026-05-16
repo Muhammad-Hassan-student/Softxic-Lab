@@ -35,7 +35,7 @@ export default function CommentSection({ postId }) {
     const getComments = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}comment/getComments/${postId}`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/comment/getComments/${postId}`);
         if (res.ok) {
           const data = await res.json();
           setComments(data);

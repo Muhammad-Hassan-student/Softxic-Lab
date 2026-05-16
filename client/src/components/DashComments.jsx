@@ -87,7 +87,9 @@ export default function DashComments() {
     const fetchComments = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/comment/getAllUsersComments`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/comment/getAllUsersComments`, {       credentials: "include",
+
+        headers: { "Content-Type": "application/json" },});
         const data = await res.json();
         if (res.ok) {
           setComments(data.comments);
